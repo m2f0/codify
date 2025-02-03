@@ -1,17 +1,11 @@
-"""Define a custom Reasoning and Action agent.
-
-Works with a chat model with tool calling support.
-"""
-
+"""Define a custom Reasoning and Action agent."""
 from datetime import datetime, timezone
 from typing import Dict, List, Literal, cast
-
 from langchain_core.messages import AIMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph
 from langgraph.prebuilt import ToolNode
 from langsmith.run_helpers import traceable
-
 from react_agent.configuration import Configuration
 from react_agent.state import InputState, State
 from react_agent.tools import TOOLS

@@ -1,9 +1,6 @@
-"""React Agent.
+"""React agent package."""
+from .tools import TOOLS
+from .configuration import Configuration
+from .graph import graph
 
-This module defines a custom reasoning and action agent graph.
-It invokes tools in a simple loop.
-"""
-
-from react_agent.graph import graph
-
-__all__ = ["graph"]
+__all__ = ["TOOLS", "Configuration", "graph"]

@@ -20,6 +20,7 @@ dependencies = [
     "flask[async]",  # Updated to include async support
     "hypercorn",
     "asgiref",  # Added for ASGI support
+    "asyncio"  # Adicionada nova dependência
 ]
 
 

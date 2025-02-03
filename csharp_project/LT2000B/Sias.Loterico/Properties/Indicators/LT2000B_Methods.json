@@ -1,0 +1,1129 @@
+{
+  "QueryDescription": {
+    "Inserts": 7,
+    "Updates": 2,
+    "Deletes": 1,
+    "Selects": 8,
+    "Cursors": 0,
+    "Procedures": 0,
+    "All": 18
+  },
+  "MethodDescription": {
+    "ProgramName": "LT2000B",
+    "Quantity": 116,
+    "Methods": [
+      {
+        "EntraceMethod": true,
+        "Lines": 13,
+        "Name": "Execute",
+        "IgnoredMethod": false,
+        "Parameters": [
+          "string CADASTRO_FILE_NAME_P",
+          "string RLT2000B_FILE_NAME_P"
+        ],
+        "Obs": "",
+        "Calls": [
+          "R0000_90_FINALIZA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 80,
+        "Name": "R0000_90_FINALIZA",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R0000_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 13,
+        "Name": "R0100_SELECT_V1SISTEMA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R0100_SELECT_V1SISTEMA_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R0100_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 4,
+        "Name": "R0110_SELECT_APOLICE_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R0110_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 13,
+        "Name": "R0900_LE_CADASTRO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R0900_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R0900_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 13,
+        "Name": "R0950_TRATA_HEADER_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R0950_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 24,
+        "Name": "R1000_PROCESSA_CADASTRO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R1000_LER_CADASTRO"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 2,
+        "Name": "R1000_LER_CADASTRO",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R1000_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 2,
+        "Name": "R1010_VERIFICA_UF_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R1010_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 254,
+        "Name": "R1050_CRITICA_CADASTRO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R1050_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 25,
+        "Name": "R1055_CRITICA_DATA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R1055_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 16,
+        "Name": "R1100_TRATAR_TELEF_FAX_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R1100_MONTA_TELEF",
+          "R1100_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 2,
+        "Name": "R1100_MONTA_TELEF",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R1100_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 4,
+        "Name": "R1110_MOVIMENTA_TEL_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R1110_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 7,
+        "Name": "R5000_SELECT_MAX_CONTA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R5000_SELECT_MAX_CONTA_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R5000_EXIT",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 6,
+        "Name": "R5100_UPDATE_MAX_CONTA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R5100_UPDATE_MAX_CONTA_DB_UPDATE_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R5100_EXIT",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 56,
+        "Name": "R6000_VER_ALTERACAO_LOTERICO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6000_PULA",
+          "R6000_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 2,
+        "Name": "R6000_PULA",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6000_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 11,
+        "Name": "R6020_SELECT_FC_LOTERICO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6020_SELECT_FC_LOTERICO_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6020_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R6030_SELECT_V0LOTERICO01_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6030_SELECT_V0LOTERICO01_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6030_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 34,
+        "Name": "R6060_VER_ALTERACAO_FC_CONTA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6060_CONTA_ISENTA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 27,
+        "Name": "R6060_CONTA_ISENTA",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6060_CONTA_CAUCAO"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 26,
+        "Name": "R6060_CONTA_CAUCAO",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6060_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6060_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R6070_LER_CONTA_BANCARIA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6070_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6070_LER_CONTA_BANCARIA_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6070_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 8,
+        "Name": "R6080_VER_CONTA_EXISTENTE_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6080_VER_CONTA_EXISTENTE_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6080_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 143,
+        "Name": "R6200_MONTAR_FC_LOTERICO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6200_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 20,
+        "Name": "R6210_INSERT_FC_LOTERICO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6210_INSERT_FC_LOTERICO_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6210_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 22,
+        "Name": "R6220_GRAVAR_FC_CONTA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6220_CONTA_ISENTA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R6220_CONTA_ISENTA",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6220_CONTA_CAUCAO"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R6220_CONTA_CAUCAO",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6220_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6220_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R6230_INSERT_FC_CONTA_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6230_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6230_INSERT_FC_CONTA_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6230_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 69,
+        "Name": "R6600_GRAVAR_MOVIMENTO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6600_GRAVAR_MOVIMENTO_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6600_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 17,
+        "Name": "R6610_GRAVAR_MOV_COBER_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6610_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6610_GRAVAR_MOV_COBER_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6610_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 18,
+        "Name": "R6620_GRAVAR_MOV_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6620_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6620_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 9,
+        "Name": "R6630_GRAVAR_MOV_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6630_GRAVAR_MOV_BONUS_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6630_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R6700_UPDATE_FC_LOTERICO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6700_UPDATE_FC_LOTERICO_DB_UPDATE_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6700_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6750_DELETE_FC_PEND_LOTERICO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6750_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 8,
+        "Name": "R6800_SELECT_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6800_SELECT_BONUS_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6800_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 10,
+        "Name": "R6810_GRAVAR_LOTERICO_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6810_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 5,
+        "Name": "R6820_DELETE_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6820_DELETE_BONUS_DB_DELETE_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6820_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 5,
+        "Name": "R6830_INSERT_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6830_INSERT_BONUS_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6830_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 25,
+        "Name": "R6850_VER_ALTERACAO_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6850_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6850_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 12,
+        "Name": "R6900_ALTERAR_BONUS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R6900_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6900_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 119,
+        "Name": "R7500_IMPRIME_CADASTRO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R7500_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 19,
+        "Name": "R7510_MONTA_CABECALHO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R7510_MONTA_CABECALHO_DB_SELECT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R7510_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 8,
+        "Name": "R7520_CABECALHO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R7520_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 8,
+        "Name": "R7600_IMPRIME_LD00_MSG1_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": [
+          "R7600_SAIDA"
+        ]
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R7600_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 45,
+        "Name": "R7650_CONVERTE_CARACTER_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R7650_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 30,
+        "Name": "R6990_GRAVAR_PARAM_RENOVAR_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6990_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 8,
+        "Name": "R6995_INSERT_PARAMETRO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6995_INSERT_PARAMETRO_DB_INSERT_1",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R6995_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 2,
+        "Name": "R9000_OPEN_ARQUIVOS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R9000_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R9100_CLOSE_ARQUIVOS_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 1,
+        "Name": "R9100_SAIDA",
+        "IgnoredMethod": true,
+        "Parameters": [],
+        "Obs": "Método ignorado por falta de comandos",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 7,
+        "Name": "R9999_ROT_ERRO_SECTION",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      },
+      {
+        "EntraceMethod": false,
+        "Lines": 0,
+        "Name": "R9999_SAIDA",
+        "IgnoredMethod": false,
+        "Parameters": [],
+        "Obs": "",
+        "Calls": []
+      }
+    ]
+  },
+  "CopyDescription": {
+    "Quantity": 0,
+    "Names": []
+  },
+  "DclDescription": {
+    "Quantity": 11,
+    "Names": [
+      "FCSEQUEN",
+      "FCLOTERI",
+      "FCPENLOT",
+      "FCTPENLT",
+      "FCCONBAN",
+      "FCHISLOT",
+      "LTLOTBON",
+      "LTMVPROP",
+      "LTMVPRBO",
+      "LTMVPRCO",
+      "LTSOLPAR"
+    ]
+  },
+  "FilesDescription": {
+    "Quantity": 2,
+    "Names": [
+      "CADASTRO0",
+      "RLT2000B0"
+    ]
+  }
+}

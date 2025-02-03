@@ -1,0 +1,8 @@
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.csproj.AssemblyReference.cache
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.AssemblyInfoInputs.cache
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.AssemblyInfo.cs
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.csproj.CoreCompileInputs.cache
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\MarioMayerleFilho\Documents\projects\codify\csharp_project\LT2000B\Sias.Loterico\obj\Debug\net8.0\Sias.Loterico.sourcelink.json

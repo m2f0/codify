@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+<DefineConstants>$(DefineConstants);DB2</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IA_ConverterCommons\IA_ConverterCommons.csproj" />
+  </ItemGroup>
+  
+</Project>

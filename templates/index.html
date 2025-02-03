@@ -114,6 +114,95 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #3182ce;
         }
+
+        .console-output {
+            background-color: #1e1e1e;
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            white-space: pre-wrap;
+            margin: 10px 0;
+            overflow-x: auto;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        /* Estilização para diferentes tipos de mensagens */
+        .console-output .build-header {
+            color: #4a9eff;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        .console-output .success {
+            color: #4caf50;
+        }
+
+        .console-output .error {
+            color: #ff5252;
+        }
+
+        .console-output .warning {
+            color: #ffd740;
+        }
+
+        .console-output .info {
+            color: #81d4fa;
+        }
+
+        /* Estilo para caminhos de arquivo */
+        .console-output .file-path {
+            color: #7986cb;
+            font-style: italic;
+        }
+
+        /* Estilo para números de linha */
+        .console-output .line-number {
+            color: #78909c;
+        }
+        
+        .error {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        
+        .build-success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        
+        .build-error {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        
+        .build-output {
+            margin-top: 10px;
+            padding-left: 10px;
+            border-left: 3px solid #666;
+        }
+
+        /* Opcional: estilizar a barra de rolagem horizontal */
+        .console-output::-webkit-scrollbar {
+            height: 8px;             /* Altura da barra de rolagem horizontal */
+        }
+
+        .console-output::-webkit-scrollbar-track {
+            background: #1a2236;
+        }
+
+        .console-output::-webkit-scrollbar-thumb {
+            background: #4a9eff;
+            border-radius: 4px;
+        }
+
+        .console-output::-webkit-scrollbar-thumb:hover {
+            background: #3182ce;
+        }
     </style>
 </head>
 <body>
@@ -150,34 +239,78 @@
         }
 
         async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const message = input.value.trim();
-            if (!message) return;
-
-            addMessage(message, 'user');
-            input.value = '';
-
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value;
+            if (!message.trim()) return;
+            
+            userInput.value = '';
+            
+            const chatContainer = document.getElementById('chat-container');
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.textContent = message;
+            chatContainer.appendChild(userMessageDiv);
+            
+            const assistantMessageDiv = document.createElement('div');
+            assistantMessageDiv.className = 'message assistant-message';
+            chatContainer.appendChild(assistantMessageDiv);
+            
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ message: message })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    
+                    // Processa o buffer linha por linha
+                    let newlineIndex;
+                    while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+                        const line = buffer.slice(0, newlineIndex);
+                        buffer = buffer.slice(newlineIndex + 1);
+                        
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.slice(6));
+                                
+                                if (data.type === 'console' || data.type === 'build') {
+                                    assistantMessageDiv.innerHTML = `<pre class="console-output">${escapeHtml(data.output)}</pre>`;
+                                    
+                                    if (data.type === 'build') {
+                                        if (data.success) {
+                                            assistantMessageDiv.querySelector('pre').classList.add('build-success');
+                                        } else {
+                                            assistantMessageDiv.querySelector('pre').classList.add('build-error');
+                                        }
+                                    }
+                                } else if (data.type === 'content') {
+                                    assistantMessageDiv.textContent += data.chunk;
+                                } else if (data.type === 'error') {
+                                    assistantMessageDiv.innerHTML += `<span class="error">${escapeHtml(data.chunk)}</span>`;
+                                }
+                            } catch (e) {
+                                console.error('Error parsing JSON:', e, 'Line:', line);
+                            }
+                        }
+                    }
                 }
-
-                const data = await response.json();
-                const formattedResponse = formatResponse(data.response);
-                addMessage(formattedResponse, 'assistant');
-
             } catch (error) {
                 console.error('Error:', error);
-                addMessage('Sorry, there was an error processing your request.', 'assistant');
+                assistantMessageDiv.textContent = 'Erro ao processar a mensagem.';
             }
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         // Add Enter key handler
@@ -186,6 +319,16 @@
                 sendMessage();
             }
         });
+
+        // Função auxiliar para escapar HTML
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
     </script>
 </body>
 </html>

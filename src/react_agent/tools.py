@@ -10,6 +10,8 @@ import logging
 from langchain_community.vectorstores import FAISS
 from langchain_openai import OpenAIEmbeddings
 from langchain.schema import Document
+import codecs
+import locale
 
 logger = logging.getLogger(__name__)
 
@@ -184,47 +186,72 @@ def analyze_build_errors(
 async def build_csharp_project(
     project_path: str,
     app_name: str,
-    config: Annotated[RunnableConfig, CallbackManagerForToolRun]
+    config: Annotated[RunnableConfig, CallbackManagerForToolRun],
+    session_id: str
 ) -> Dict[str, Any]:
     """
     Executa o build do projeto C#.
     """
     try:
-        # Implementação do build
+        logger.info(f"[Session: {session_id}] Starting build in {project_path}")
+        
+        # Configurar o encoding correto para o subprocess
+        startup_info = None
+        if os.name == 'nt':  # Windows
+            startup_info = subprocess.STARTUPINFO()
+            startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        
         process = subprocess.Popen(
             ["dotnet", "build"],
             cwd=project_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            startupinfo=startup_info,
+            encoding='utf-8',  # Forçar UTF-8
+            errors='replace'   # Substituir caracteres inválidos
         )
         
         stdout, stderr = process.communicate()
+        
+        # Normalizar a saída para UTF-8
+        def normalize_output(text: str) -> str:
+            if text:
+                # Converter para unicode e normalizar
+                return text.encode('utf-8', errors='replace').decode('utf-8')
+            return ""
+        
+        stdout = normalize_output(stdout)
+        stderr = normalize_output(stderr)
         output = stdout + stderr
         
         success = process.returncode == 0
         
-        # Analisa os erros se o build falhou
+        logger.info(f"[Session: {session_id}] Build completed with status: {'success' if success else 'failed'}")
+        
         if not success:
             analysis = analyze_build_errors(output)
+            logger.error(f"[Session: {session_id}] Build failed with errors: {analysis}")
             return {
                 "success": False,
                 "output": output,
-                "analysis": analysis
+                "analysis": analysis,
+                "session_id": session_id
             }
         
         return {
             "success": True,
             "output": output,
-            "message": "Build concluído com sucesso"
+            "message": "Build concluído com sucesso",
+            "session_id": session_id
         }
         
     except Exception as e:
-        logger.error(f"Erro no build: {str(e)}")
+        logger.error(f"[Session: {session_id}] Build error: {str(e)}")
         return {
             "success": False,
             "error": str(e),
-            "message": "Falha ao executar o build"
+            "message": "Falha ao executar o build",
+            "session_id": session_id
         }
 
 # Define as ferramentas disponíveis

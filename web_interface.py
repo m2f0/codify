@@ -22,6 +22,8 @@ from functools import partial
 import warnings
 import sys
 from typing import Any, Dict
+import uuid
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -82,10 +84,31 @@ async def console_test(message: str) -> dict:
         "type": "console"
     }
 
+class BuildSession:
+    def __init__(self):
+        self.session_id = str(uuid.uuid4())
+        self.timestamp = datetime.utcnow()
+        self.logs = []
+
+    def add_log(self, message: str, level: str = "INFO"):
+        timestamp = datetime.utcnow()
+        log_entry = {
+            "timestamp": timestamp.isoformat(),
+            "session_id": self.session_id,
+            "level": level,
+            "message": message
+        }
+        self.logs.append(log_entry)
+        return log_entry
+
 async def handle_build_command(file_path: str) -> dict:
     """Executa o comando de build e retorna o resultado formatado."""
+    build_session = BuildSession()
+    
     if not file_path:
         file_path = "Sias.Loterico.csproj"
+    
+    build_session.add_log(f"Iniciando build para arquivo: {file_path}")
     
     if file_path.startswith("csharp_project"):
         normalized_path = file_path
@@ -95,32 +118,31 @@ async def handle_build_command(file_path: str) -> dict:
     project_path = os.path.dirname(normalized_path)
     app_name = os.path.basename(normalized_path)
     
+    build_session.add_log(f"Caminho normalizado: {normalized_path}")
+    build_session.add_log(f"Diretório do projeto: {project_path}")
+    
     result = await build_csharp_project(
         project_path=project_path,
         app_name=app_name,
-        config={}
+        config={},
+        session_id=build_session.session_id
     )
-    
-    # Sanitiza a saída para JSON seguro
-    def sanitize_output(text):
-        if not text:
-            return ""
-        # Escapa caracteres especiais e normaliza quebras de linha
-        return text.replace('\r\n', '\n').replace('\r', '\n')
     
     # Formata a saída mantendo todo o log
     output_parts = []
-    output_parts.append("=== Build Result ===")
+    output_parts.append(f"=== Build Result (Session: {build_session.session_id}) ===")
+    output_parts.append(f"Started: {build_session.timestamp.isoformat()}")
     output_parts.append(f"Project: {app_name}")
     output_parts.append(f"Status: {'Success' if result['success'] else 'Failed'}")
     
     if result.get('output'):
         output_parts.append("\n=== Build Output ===")
-        output_parts.append(sanitize_output(result['output']))
+        output_parts.append(result['output'])
     
     if result.get('error'):
         output_parts.append("\n=== Build Errors ===")
-        output_parts.append(sanitize_output(result['error']))
+        output_parts.append(result['error'])
+        build_session.add_log(result['error'], "ERROR")
     
     output_parts.append("==================")
     
@@ -129,7 +151,9 @@ async def handle_build_command(file_path: str) -> dict:
     return {
         "success": result['success'],
         "output": final_output,
-        "type": "build"
+        "type": "build",
+        "session_id": build_session.session_id,
+        "logs": build_session.logs
     }
 
 async def process_command(message: str):

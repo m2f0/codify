@@ -12,6 +12,36 @@ using System.Text.Json;
 //[module: StopWatch]
 namespace IA_ConverterCommons
 {
+    public class LogFormat
+    {
+        [JsonIgnore]
+        public Stopwatch? timer;
+
+        public int? Counter { get; set; } = 1;
+        public string? Class { get; set; } = "";
+        public string? MethodHeader { get; set; } = "";
+        public string? Method { get; set; } = "";
+        public string? Time => $"{timer?.ElapsedMilliseconds} ms";
+        public string? Message { get; set; } = "";
+        public string? Error { get; set; } = "";
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;  // Adicionado timestamp
+    }
+
+    public class LogFormatSQL
+    {
+        [JsonIgnore]
+        public Stopwatch? timer;
+
+        public Guid? DBCallId { get; set; } = null;
+        public DateTime? TimeStamp { get; set; } = DateTime.Now;
+        public string? Query { get; set; } = "";
+        public long? sqlCode { get; set; } = null;
+        public int? rowsCount { get; set; } = null;
+        public string? Time => $"{timer?.ElapsedMilliseconds} ms";        
+        public string? Error { get; set; } = "";
+        public string? SessionId { get; set; } = null;  // Adicionado ID de sessão
+    }
+
     public class LogHelper
     {
         public static void Log(MethodBase method, string message)

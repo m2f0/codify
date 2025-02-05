@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("IA_ConverterCommons")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+790193c0a3bfbb6ba10bc97d6e374b93e1a01ccd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a39cd0bedeb7f22666556110137aa8aee61c5457")]
 [assembly: System.Reflection.AssemblyProductAttribute("IA_ConverterCommons")]
 [assembly: System.Reflection.AssemblyTitleAttribute("IA_ConverterCommons")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

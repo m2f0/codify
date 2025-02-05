@@ -12,6 +12,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.schema import Document
 import codecs
 import locale
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -141,46 +142,146 @@ async def search(
         logger.error(f"Erro na busca Tavily: {str(e)}")
         return None
 
-@traceable(name="analyze_build_errors")
-def analyze_build_errors(
+@traceable(name="analyze_build_errors_and_suggest")
+def analyze_build_errors_and_suggest(
     build_output: str,
     run_manager: Optional[CallbackManagerForToolRun] = None,
 ) -> Dict[str, Any]:
     """
-    Analisa os erros de build do output fornecido.
+    Analisa os erros de build e propõe soluções para cada tipo de erro encontrado.
+    
+    Args:
+        build_output: Output do processo de build
+        run_manager: Gerenciador de callbacks opcional
+    
+    Returns:
+        Dict contendo análise dos erros e sugestões de correção
     """
     try:
-        errors = []
+        # Estrutura para armazenar erros categorizados
+        error_analysis = {
+            "compilation_errors": [],
+            "reference_errors": [],
+            "syntax_errors": [],
+            "other_errors": [],
+            "suggestions": []
+        }
+        
         current_error = []
         
         for line in build_output.split('\n'):
             line = line.strip()
+            
+            # Identifica início de um novo erro
             if 'error' in line.lower():
                 if current_error:
-                    errors.append('\n'.join(current_error))
-                    current_error = []
-                current_error.append(line)
+                    error_info = analyze_single_error('\n'.join(current_error))
+                    categorize_error(error_info, error_analysis)
+                current_error = [line]
             elif current_error and line:
                 current_error.append(line)
                 
+        # Processa o último erro
         if current_error:
-            errors.append('\n'.join(current_error))
+            error_info = analyze_single_error('\n'.join(current_error))
+            categorize_error(error_info, error_analysis)
             
+        # Gera sugestões baseadas nos erros encontrados
+        generate_suggestions(error_analysis)
+        
         return {
             "success": True,
-            "errors": errors,
-            "count": len(errors),
-            "summary": f"Encontrados {len(errors)} erros no build",
-            "details": "\n\n".join(errors) if errors else "Nenhum erro encontrado"
+            "analysis": error_analysis,
+            "summary": {
+                "total_errors": sum(len(errors) for errors in error_analysis.values()),
+                "compilation_errors": len(error_analysis["compilation_errors"]),
+                "reference_errors": len(error_analysis["reference_errors"]),
+                "syntax_errors": len(error_analysis["syntax_errors"]),
+                "other_errors": len(error_analysis["other_errors"])
+            },
+            "suggestions": error_analysis["suggestions"]
         }
         
     except Exception as e:
-        logger.error(f"Erro ao analisar build: {str(e)}")
+        logger.error(f"Erro ao analisar build e gerar sugestões: {str(e)}")
         return {
             "success": False,
             "error": str(e),
-            "message": "Falha ao analisar erros do build"
+            "message": "Falha ao analisar erros do build e gerar sugestões"
         }
+
+def analyze_single_error(error_text: str) -> Dict[str, str]:
+    """
+    Analisa um único erro e extrai informações relevantes.
+    """
+    error_info = {
+        "type": "unknown",
+        "message": error_text,
+        "file": "",
+        "line": "",
+        "code": ""
+    }
+    
+    # Extrai informações do erro usando regex
+    if "CS" in error_text:  # Erro de compilação C#
+        match = re.search(r'(CS\d+)', error_text)
+        if match:
+            error_info["code"] = match.group(1)
+            
+        # Extrai nome do arquivo e linha
+        file_match = re.search(r'([\w\.]+\.cs)\((\d+),', error_text)
+        if file_match:
+            error_info["file"] = file_match.group(1)
+            error_info["line"] = file_match.group(2)
+            
+    return error_info
+
+def categorize_error(error_info: Dict[str, str], analysis: Dict[str, List]) -> None:
+    """
+    Categoriza o erro com base nas informações extraídas.
+    """
+    if error_info["code"].startswith("CS"):
+        code = error_info["code"]
+        if code in ["CS0246", "CS0234"]:  # Erros de referência
+            analysis["reference_errors"].append(error_info)
+        elif code in ["CS1002", "CS1513"]:  # Erros de sintaxe
+            analysis["syntax_errors"].append(error_info)
+        else:
+            analysis["compilation_errors"].append(error_info)
+    else:
+        analysis["other_errors"].append(error_info)
+
+def generate_suggestions(analysis: Dict[str, List]) -> None:
+    """
+    Gera sugestões de correção baseadas nos erros encontrados.
+    """
+    suggestions = []
+    
+    # Sugestões para erros de referência
+    if analysis["reference_errors"]:
+        suggestions.append({
+            "type": "reference",
+            "message": "Verificar se todas as dependências estão corretamente referenciadas no projeto",
+            "actions": [
+                "Verificar o arquivo .csproj para garantir que todas as referências estão presentes",
+                "Executar 'dotnet restore' para restaurar os pacotes NuGet",
+                "Verificar se os namespaces estão corretamente importados nos arquivos"
+            ]
+        })
+    
+    # Sugestões para erros de sintaxe
+    if analysis["syntax_errors"]:
+        suggestions.append({
+            "type": "syntax",
+            "message": "Corrigir problemas de sintaxe no código",
+            "actions": [
+                "Verificar chaves e parênteses não fechados",
+                "Verificar pontuação e ponto-e-vírgula",
+                "Utilizar um editor com realce de sintaxe para identificar erros"
+            ]
+        })
+    
+    analysis["suggestions"] = suggestions
 
 @traceable(name="build_csharp_project")
 async def build_csharp_project(
@@ -229,7 +330,8 @@ async def build_csharp_project(
         logger.info(f"[Session: {session_id}] Build completed with status: {'success' if success else 'failed'}")
         
         if not success:
-            analysis = analyze_build_errors(output)
+            # Alterado para usar analyze_build_errors_and_suggest ao invés de analyze_build_errors
+            analysis = analyze_build_errors_and_suggest(output)
             logger.error(f"[Session: {session_id}] Build failed with errors: {analysis}")
             return {
                 "success": False,
@@ -262,9 +364,9 @@ TOOLS = [
         func=search,
     ),
     Tool(
-        name="analyze_build_errors",
-        description="Analisa os erros encontrados durante o processo de build do projeto C#",
-        func=analyze_build_errors,
+        name="analyze_build_errors_and_suggest",
+        description="Analisa os erros encontrados durante o processo de build do projeto C# e propõe soluções",
+        func=analyze_build_errors_and_suggest,
     ),
     Tool(
         name="build_csharp_project",

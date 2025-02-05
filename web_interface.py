@@ -5,25 +5,27 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.tools import Tool
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import AIMessage, HumanMessage
+import logging
+import warnings
+import os
+import sys
+import json
+import traceback
+from datetime import datetime
+import uuid
+from dotenv import load_dotenv
 from react_agent.tools import (
     list_vectorstore_files, 
     read_file_content, 
     build_csharp_project,
     validate_csharp_directory,
-    initialize_vector_store
+    initialize_vector_store,
+    analyze_build_errors_and_suggest
 )
-import logging
-import traceback
-from dotenv import load_dotenv
-import os
-import json
-import asyncio
-from functools import partial
-import warnings
-import sys
-from typing import Any, Dict
-import uuid
-from datetime import datetime
+
+# Configurar o logger
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
@@ -64,9 +66,16 @@ memory = ConversationBufferMemory(
 
 tools = [
     Tool(
+        name="analyze_build",
+        description="Analisa os erros do último build e sugere correções",
+        func=lambda _: analyze_build_errors_and_suggest(
+            last_build_result.get('output', '') if last_build_result else 'No build output available'
+        ),
+    ),
+    Tool(
         name="list_files",
         description="Lista todos os arquivos indexados",
-        func=list_vectorstore_files,
+        func=lambda: list_vectorstore_files(),
     ),
     Tool(
         name="read_file",
@@ -103,6 +112,7 @@ class BuildSession:
 
 async def handle_build_command(file_path: str) -> dict:
     """Executa o comando de build e retorna o resultado formatado."""
+    global last_build_result
     build_session = BuildSession()
     
     if not file_path:
@@ -127,6 +137,9 @@ async def handle_build_command(file_path: str) -> dict:
         config={},
         session_id=build_session.session_id
     )
+    
+    # Armazena o resultado do build globalmente
+    last_build_result = result
     
     # Formata a saída mantendo todo o log
     output_parts = []
@@ -184,19 +197,17 @@ async def process_command(message: str):
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", """Você é um assistente AI especializado em análise de código.
-    
-Quando receber comandos para listar ou mostrar código:
-1. Use list_files para obter a lista de arquivos
-2. Para CADA arquivo da lista, use read_file para obter seu conteúdo
-3. Apresente o conteúdo de cada arquivo precedido por seu nome
 
-Para outros comandos:
-- "listar arquivos", "liste os arquivos", "mostrar arquivos" → use apenas list_files
-- "analisar código", "buscar erros" → use read_file seguido de análise
+Para comandos específicos:
+- "analisar build" → Primeiro verifique se existe um resultado de build recente antes de usar analyze_build
+- "listar arquivos" → use list_files
+- "ler arquivo" → use read_file
+
+Antes de analisar o build, verifique se há um resultado de build disponível. 
+Se não houver resultado de build, informe ao usuário que ele precisa executar o build primeiro.
 
 Responda sempre em português.
-
-IMPORTANTE: Quando o usuário pedir para listar ou mostrar código, você DEVE usar read_file para cada arquivo listado."""),
+"""),
     MessagesPlaceholder(variable_name="chat_history"),
     ("human", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad"),
@@ -301,27 +312,8 @@ async def analyze_build():
         })
     
     try:
-        # Formata os erros e warnings para análise
-        build_analysis = {
-            "status": "Success" if last_build_result['success'] else "Failed",
-            "errors": [],
-            "warnings": []
-        }
-        
-        if last_build_result.get('output'):
-            for line in last_build_result['output'].splitlines():
-                if ": error " in line:
-                    build_analysis["errors"].append(line)
-                elif ": warning " in line:
-                    build_analysis["warnings"].append(line)
-        
-        # Se houver erros no stderr, adicione-os também
-        if last_build_result.get('error'):
-            build_analysis["errors"].extend(
-                last_build_result['error'].splitlines()
-            )
-            
-        return jsonify(build_analysis)
+        analysis = analyze_build_errors_and_suggest(last_build_result.get('output', ''))
+        return jsonify(analysis)
         
     except Exception as e:
         return jsonify({"error": str(e), "traceback": traceback.format_exc()})

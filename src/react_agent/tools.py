@@ -39,7 +39,7 @@ def validate_csharp_directory() -> bool:
     Valida se o diretório do projeto C# existe e contém arquivos necessários.
     """
     base_directory = os.getenv("CSHARP_PROJECT_DIR", "./csharp_project")
-    project_path = os.path.join(base_directory, "LT2000B", "Sias.Loterico")
+    project_path = os.path.join(base_directory, "LT2000B_20250205", "Sias.Loterico")
     
     if not os.path.exists(project_path):
         logger.error(f"Diretório {project_path} não encontrado")
@@ -303,13 +303,13 @@ async def build_csharp_project(
             startup_info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         
         process = subprocess.Popen(
-            ["dotnet", "build"],
+            ["dotnet", "build", "/warnaserror:false", "/p:WarningLevel=0"],  # Corrigido o formato do parâmetro
             cwd=project_path,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             startupinfo=startup_info,
-            encoding='utf-8',  # Forçar UTF-8
-            errors='replace'   # Substituir caracteres inválidos
+            encoding='utf-8',
+            errors='replace'
         )
         
         stdout, stderr = process.communicate()

@@ -123,7 +123,7 @@ async def handle_build_command(file_path: str) -> dict:
     if file_path.startswith("csharp_project"):
         normalized_path = file_path
     else:
-        normalized_path = f"csharp_project/LT2000B/Sias.Loterico/{file_path}"
+        normalized_path = f"csharp_project/LT2000B_20250205/Sias.Loterico/{file_path}"
     
     project_path = os.path.dirname(normalized_path)
     app_name = os.path.basename(normalized_path)
@@ -283,7 +283,7 @@ async def build():
         if file_path.startswith("csharp_project"):
             normalized_path = file_path
         else:
-            normalized_path = f"csharp_project/LT2000B/Sias.Loterico/{file_path}"
+            normalized_path = f"csharp_project/LT2000B_20250205/Sias.Loterico/{file_path}"
             
         project_path = os.path.dirname(normalized_path)
         app_name = os.path.basename(normalized_path)

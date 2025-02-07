@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- ... outros elementos do head ... -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Estilos para elementos markdown */
+        .message-content pre {
+            background-color: #f6f8fa;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+        }
+        
+        .message-content code {
+            background-color: rgba(175,184,193,0.2);
+            padding: 0.2em 0.4em;
+            border-radius: 6px;
+            font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+        }
+        
+        .message-content h3 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+    </style>
+</head>
+<body>
+    <!-- ... resto do HTML ... -->
+</body>
+
+<script>
+    // Configurar marked para tratar corretamente blocos de código
+    marked.setOptions({
+        highlight: function(code, lang) {
+            return code;
+        },
+        breaks: true
+    });
+
+    function appendMessage(message, isUser = false) {
+        const chatMessages = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = isUser ? 'message user-message' : 'message assistant-message';
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        // Renderizar o conteúdo como markdown se for mensagem do assistente
+        if (!isUser) {
+            contentDiv.innerHTML = marked.parse(message);
+        } else {
+            contentDiv.textContent = message;
+        }
+        
+        messageDiv.appendChild(contentDiv);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // ... resto do JavaScript ...
+</script>
+</html>

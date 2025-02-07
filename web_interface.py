@@ -20,7 +20,8 @@ from react_agent.tools import (
     build_csharp_project,
     validate_csharp_directory,
     initialize_vector_store,
-    analyze_build_errors_and_suggest
+    analyze_build_errors_and_suggest,
+    show_corrected_code
 )
 
 # Configurar o logger
@@ -29,8 +30,9 @@ logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
-# Adicione esta variável global para armazenar o último resultado do build
+# Adicionar variáveis globais
 last_build_result = None
+last_build_analysis = None
 
 # Suppress FAISS GPU warning
 warnings.filterwarnings('ignore', category=UserWarning, message='Failed to load GPU Faiss')
@@ -68,14 +70,14 @@ tools = [
     Tool(
         name="analyze_build",
         description="Analisa os erros do último build e sugere correções",
-        func=lambda _: analyze_build_errors_and_suggest(
+        func=lambda x=None: analyze_build_errors_and_suggest(
             last_build_result.get('output', '') if last_build_result else 'No build output available'
         ),
     ),
     Tool(
-        name="list_files",
-        description="Lista todos os arquivos indexados",
-        func=lambda: list_vectorstore_files(),
+        name="show_corrected_code",
+        description="Mostra o código corrigido para um arquivo específico",
+        func=lambda file_name: show_corrected_code(file_name, last_build_analysis),
     ),
     Tool(
         name="read_file",
@@ -228,7 +230,12 @@ async def process_stream(user_message):
         if command_result:
             return f"data: {json.dumps(command_result)}\n\n"
             
-        # Se não for um comando especial, processa normalmente com o agente
+        # Se a mensagem contém pedido para ver código corrigido
+        if "mostrar código corrigido" in user_message.lower() or "ver código corrigido" in user_message.lower():
+            if not last_build_result:
+                return f"data: {json.dumps({'chunk': 'É necessário executar o build primeiro antes de ver o código corrigido.', 'type': 'error'})}\n\n"
+        
+        # Processa normalmente com o agente
         response = await agent_executor.ainvoke(
             {"input": user_message},
             {"configurable": {
@@ -274,7 +281,7 @@ def home():
 
 @app.route('/api/build', methods=['POST'])
 async def build():
-    global last_build_result
+    global last_build_result, last_build_analysis
     try:
         data = request.get_json()
         file_path = data.get('file_path', '')
@@ -296,6 +303,10 @@ async def build():
         
         # Armazena o resultado do build
         last_build_result = result
+        
+        # Analisa os erros do build e atualiza last_build_analysis
+        if result['output']:
+            last_build_analysis = analyze_build_errors_and_suggest(result['output'])
         
         return jsonify(result)
         
@@ -322,6 +333,30 @@ async def analyze_build():
 COMMAND_HANDLERS = {
     "build": handle_build_command
 }
+
+def process_large_file(file_path: str, chunk_size: int = 50000):
+    """
+    Processa arquivos grandes em chunks.
+    """
+    with open(file_path, 'r', encoding='utf-8') as file:
+        while True:
+            chunk = file.read(chunk_size)
+            if not chunk:
+                break
+            # Processa o chunk
+            yield chunk
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    try:
+        file_path = request.json.get('file_path')
+        for chunk in process_large_file(file_path):
+            # Processa cada chunk
+            result = analyze_code_in_chunks(chunk)
+            # Envia resultado parcial
+            yield json.dumps({'partial_result': result})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     cli = sys.modules['flask.cli']

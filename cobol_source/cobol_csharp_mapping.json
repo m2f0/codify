@@ -1,0 +1,17 @@
+{
+    "Sias.Loterico.csproj": "LT2000B.cob",
+    "project_mappings": {
+        "Sias.Loterico": {
+            "main_program": "LT2000B.cob",
+            "description": "Sistema de Lotérico",
+            "related_files": [
+                "LT2000B.cob",
+                "SIASLOT.cbl"
+            ]
+        }
+    },
+    "file_mappings": {
+        "Program1.cs": "LT2000B.cob",
+        "SiasLoterico.cs": "SIASLOT.cbl"
+    }
+}

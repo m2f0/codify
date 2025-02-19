@@ -1,4 +1,5 @@
 """Tools package initialization."""
+from langchain.tools import Tool
 from .build_tools import build_csharp_project
 from .analysis_tools import analyze_build_errors_and_suggest, show_corrected_code
 from .file_tools import SimpleFileLoader, read_file_content, list_vectorstore_files
@@ -22,12 +23,22 @@ TOOLS = [
     Tool(
         name="show_corrected_code",
         description="Mostra o código corrigido para um arquivo específico",
-        func=lambda file_name: show_corrected_code(file_name, last_build_analysis)
+        func=show_corrected_code,
+    ),
+    Tool(
+        name="read_file",
+        description="Lê o conteúdo de um arquivo específico",
+        func=read_file_content,
     ),
     Tool(
         name="build_csharp_project",
         description="Executa o build de um projeto C#",
-        func=lambda project_path, app_name, config, session_id: build_csharp_project(project_path, app_name, config, session_id)
+        func=lambda project_path, app_name, config, session_id=None: build_csharp_project(
+            project_path, 
+            app_name, 
+            config, 
+            session_id
+        )
     )
 ]
 

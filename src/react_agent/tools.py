@@ -15,8 +15,10 @@ from langchain.schema import Document
 import codecs
 import locale
 import re
+from .state_manager import StateManager
 
 logger = logging.getLogger(__name__)
+state_manager = StateManager()
 
 class SimpleFileLoader:
     def __init__(self, file_path: str):
@@ -165,12 +167,10 @@ async def search(
         logger.error(f"Erro na busca Tavily: {str(e)}")
         return None
 
-last_build_analysis = None  # Variável global para armazenar a última análise
-
 @traceable(name="analyze_build_errors")
 def analyze_build_errors_and_suggest(build_output: str) -> dict:
     """Analisa os erros do build e retorna uma análise formatada."""
-    error_analysis = {
+    analysis = {
         "files": {},
         "errors": []
     }
@@ -185,15 +185,15 @@ def analyze_build_errors_and_suggest(build_output: str) -> dict:
                 error_code = match.group(3)
                 error_message = match.group(4)
                 
-                if file_name not in error_analysis["files"]:
+                if file_name not in analysis["files"]:
                     file_content = read_file_content(file_name)
-                    error_analysis["files"][file_name] = {
+                    analysis["files"][file_name] = {
                         "content": file_content,
                         "errors": []
                     }
                 
                 # Extrai a linha original do código
-                if file_content := error_analysis["files"][file_name]["content"]:
+                if file_content := analysis["files"][file_name]["content"]:
                     lines = file_content.split('\n')
                     original_line = lines[line_number - 1] if line_number <= len(lines) else None
                 else:
@@ -206,23 +206,29 @@ def analyze_build_errors_and_suggest(build_output: str) -> dict:
                     "original_line": original_line
                 }
                 
-                error_analysis["files"][file_name]["errors"].append(error_info)
-                error_analysis["errors"].append({
+                analysis["files"][file_name]["errors"].append(error_info)
+                analysis["errors"].append({
                     "file": file_name,
                     **error_info
                 })
     
-    return error_analysis
+    # Atualiza o estado global através do StateManager
+    state_manager.set_build_analysis(analysis)
+    
+    return analysis
 
-def show_corrected_code(file_name: str, error_analysis: dict = None) -> str:
+def show_corrected_code(file_name: str, build_analysis: Optional[dict] = None) -> str:
     """Mostra o código corrigido para um arquivo específico."""
-    if not error_analysis:
-        return f"Não há análise de erros disponível para o arquivo {file_name}"
+    if build_analysis is None:
+        build_analysis = state_manager.get_build_analysis()
+    
+    if not build_analysis:
+        return "Nenhuma análise de build disponível"
         
-    if file_name not in error_analysis["files"]:
+    if file_name not in build_analysis["files"]:
         return f"Não foram encontrados erros para o arquivo {file_name}"
         
-    file_info = error_analysis["files"][file_name]
+    file_info = build_analysis["files"][file_name]
     if not file_info["content"]:
         base_dir = os.getenv("CSHARP_PROJECT_DIR", "./csharp_project")
         return (f"Não foi possível ler o conteúdo do arquivo {file_name}. "

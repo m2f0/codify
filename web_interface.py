@@ -5,13 +5,15 @@ from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.tools import Tool
 from langchain.memory import ConversationBufferMemory
 from langchain.schema import AIMessage, HumanMessage
+from typing import Optional, Dict, Any, List
 import logging
 import warnings
 import os
 import sys
 import json
 import traceback
-from datetime import datetime
+import re  # Adicionando import do módulo re
+from datetime import datetime, UTC
 import uuid
 from dotenv import load_dotenv
 from react_agent.tools import (
@@ -21,14 +23,17 @@ from react_agent.tools import (
     validate_csharp_directory,
     initialize_vector_store,
     analyze_build_errors_and_suggest,
-    show_corrected_code
+    show_corrected_code,
+    search
 )
+from react_agent.state_manager import StateManager
 
 # Configurar o logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
+state_manager = StateManager()
 
 # Adicionar variáveis globais
 last_build_result = None
@@ -70,19 +75,32 @@ tools = [
     Tool(
         name="analyze_build",
         description="Analisa os erros do último build e sugere correções",
-        func=lambda x=None: analyze_build_errors_and_suggest(
-            last_build_result.get('output', '') if last_build_result else 'No build output available'
+        func=lambda: analyze_build_errors_and_suggest(
+            state_manager.get_build_result().output if state_manager.get_build_result() else 'No build output available'
         ),
     ),
     Tool(
         name="show_corrected_code",
         description="Mostra o código corrigido para um arquivo específico",
-        func=lambda file_name: show_corrected_code(file_name, last_build_analysis),
+        func=lambda file_name: show_corrected_code(
+            file_name, 
+            state_manager.get_build_analysis()
+        ),
     ),
     Tool(
         name="read_file",
         description="Lê o conteúdo de um arquivo específico",
         func=read_file_content,
+    ),
+    Tool(
+        name="list_files",
+        description="Lista todos os arquivos disponíveis",
+        func=list_vectorstore_files,
+    ),
+    Tool(
+        name="search",
+        description="Search for general web results",
+        func=search,
     )
 ]
 
@@ -98,11 +116,11 @@ async def console_test(message: str) -> dict:
 class BuildSession:
     def __init__(self):
         self.session_id = str(uuid.uuid4())
-        self.timestamp = datetime.utcnow()
+        self.timestamp = datetime.now(UTC)  # Use timezone-aware datetime
         self.logs = []
 
-    def add_log(self, message: str, level: str = "INFO"):
-        timestamp = datetime.utcnow()
+    def add_log(self, message: str, level: str = "INFO") -> dict:
+        timestamp = datetime.now(UTC)  # Use timezone-aware datetime
         log_entry = {
             "timestamp": timestamp.isoformat(),
             "session_id": self.session_id,
@@ -112,75 +130,68 @@ class BuildSession:
         self.logs.append(log_entry)
         return log_entry
 
+def format_build_output(output: str) -> list:
+    """Formata o output do build para exibição no chat."""
+    formatted_output = []  # Inicializa como lista vazia
+    
+    if not output:
+        return formatted_output
+        
+    for line in output.split('\r\n'):
+        if 'error CS' in line:
+            # Extrai apenas as informações relevantes do erro
+            match = re.search(r'.*\\([^\\]+\.cs)\((\d+),\d+\): (error CS\d+: .+)\[', line)
+            if match:
+                file, line_num, error = match.groups()
+                formatted_output.append(f"📁 {file}:{line_num} ❌ {error}")
+        elif 'Warning(s)' in line or 'Error(s)' in line or 'Time Elapsed' in line:
+            formatted_output.append(line.strip())
+    
+    return formatted_output
+
 async def handle_build_command(file_path: str) -> dict:
     """Executa o comando de build e retorna o resultado formatado."""
-    global last_build_result
     build_session = BuildSession()
+    app_name = os.path.basename(file_path)
     
-    if not file_path:
-        file_path = "Sias.Loterico.csproj"
-    
-    build_session.add_log(f"Iniciando build para arquivo: {file_path}")
-    
-    if file_path.startswith("csharp_project"):
-        normalized_path = file_path
-    else:
-        normalized_path = f"csharp_project/LT2000B_20250205/Sias.Loterico/{file_path}"
-    
-    project_path = os.path.dirname(normalized_path)
-    app_name = os.path.basename(normalized_path)
-    
-    build_session.add_log(f"Caminho normalizado: {normalized_path}")
-    build_session.add_log(f"Diretório do projeto: {project_path}")
+    build_session.add_log(f"Iniciando build para: {app_name}")
     
     result = await build_csharp_project(
-        project_path=project_path,
+        project_path="",
         app_name=app_name,
         config={},
         session_id=build_session.session_id
     )
     
-    # Armazena o resultado do build globalmente
-    last_build_result = result
+    # Formata o resultado do build
+    timestamp = datetime.now(UTC).isoformat()
     
-    # Formata a saída mantendo todo o log
-    output_parts = []
-    output_parts.append(f"=== Build Result (Session: {build_session.session_id}) ===")
-    output_parts.append(f"Started: {build_session.timestamp.isoformat()}")
-    output_parts.append(f"Project: {app_name}")
-    output_parts.append(f"Status: {'Success' if result['success'] else 'Failed'}")
+    # Formata o output para melhor legibilidade
+    formatted_lines = format_build_output(result['output'])
     
-    if result.get('output'):
-        output_parts.append("\n=== Build Output ===")
-        output_parts.append(result['output'])
-    
-    if result.get('error'):
-        output_parts.append("\n=== Build Errors ===")
-        output_parts.append(result['error'])
-        build_session.add_log(result['error'], "ERROR")
-    
-    output_parts.append("==================")
-    
-    final_output = "\n".join(output_parts)
-    
-    return {
-        "success": result['success'],
-        "output": final_output,
-        "type": "build",
-        "session_id": build_session.session_id,
-        "logs": build_session.logs
-    }
+    formatted_result = {
+        "type": "build_result",
+        "content": f"""🔨 Build Result (Session: {build_session.session_id})
+⏰ Started: {timestamp}
+📦 Project: {app_name}
+📊 Status: {'✅ Success' if result['success'] else '❌ Failed'}
 
-async def process_command(message: str):
-    """Processa comandos específicos."""
-    message = message.lower().strip()
+📋 Build Output:
+{'\n'.join(formatted_lines)}
+""",
+        "success": result['success']
+    }
     
+    return formatted_result
+
+async def process_command(message: str) -> Optional[Dict[str, Any]]:
+    """Processa comandos especiais."""
     if message.startswith("console "):
         console_message = message[8:].strip()  # Remove "console " e espaços
         return await console_test(console_message)
     
     # Processa comandos de build
-    if message.startswith("build ") or "faça o build" in message or "fazer build" in message:
+    if message.startswith("build ") or "faça o build" in message.lower() or "fazer build" in message.lower():
         # Extrai o nome do arquivo/caminho do comando
         file_path = ""
         if message.startswith("build "):
@@ -193,7 +204,15 @@ async def process_command(message: str):
                     file_path = words[i + 1]
                     break
         
-        return await handle_build_command(file_path)
+        if not file_path:
+            return {
+                "type": "error",
+                "content": "Nome do arquivo não especificado no comando de build"
+            }
+            
+        build_result = await handle_build_command(file_path)
+        logger.info(f"Resultado do build: {build_result}")  # Log para debug
+        return build_result
     
     return None
 
@@ -228,11 +247,19 @@ async def process_stream(user_message):
         # Primeiro, verifica se é um comando especial
         command_result = await process_command(user_message)
         if command_result:
-            return f"data: {json.dumps(command_result)}\n\n"
+            # Formata a saída do build de maneira mais clara
+            if isinstance(command_result, dict) and command_result.get('type') == 'build_result':
+                output = {
+                    'chunk': command_result['content'],
+                    'type': 'build_output',
+                    'success': command_result.get('success', False)
+                }
+                return f"data: {json.dumps(output)}\n\n"
+            return f"data: {json.dumps({'chunk': command_result, 'type': 'command_output'})}\n\n"
             
         # Se a mensagem contém pedido para ver código corrigido
         if "mostrar código corrigido" in user_message.lower() or "ver código corrigido" in user_message.lower():
-            if not last_build_result:
+            if not state_manager.get_build_result():
                 return f"data: {json.dumps({'chunk': 'É necessário executar o build primeiro antes de ver o código corrigido.', 'type': 'error'})}\n\n"
         
         # Processa normalmente com o agente
@@ -256,24 +283,26 @@ async def process_stream(user_message):
 @app.route('/chat', methods=['POST'])
 async def chat():
     try:
-        user_message = request.json.get('message')
+        user_message = request.json.get('message', '')
         if not user_message:
-            return jsonify({'error': 'Mensagem não fornecida'}), 400
+            return jsonify({"error": "Empty message"})
 
         response = await process_stream(user_message)
-        return Response(
-            [response],
-            mimetype='text/event-stream',
-            headers={
-                'Cache-Control': 'no-cache',
-                'X-Accel-Buffering': 'no'
-            }
-        )
         
+        # Garante que a resposta seja enviada como texto formatado
+        if isinstance(response, dict) and 'content' in response:
+            return jsonify({
+                "response": response['content'],
+                "type": response.get('type', 'text'),
+                "success": response.get('success', True)
+            })
+        else:
+            return jsonify({"response": str(response)})
+            
     except Exception as e:
         logger.error(f"Error in chat endpoint: {str(e)}")
         logger.error(f"Traceback: {traceback.format_exc()}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/')
 def home():
@@ -281,7 +310,6 @@ def home():
 
 @app.route('/api/build', methods=['POST'])
 async def build():
-    global last_build_result, last_build_analysis
     try:
         data = request.get_json()
         file_path = data.get('file_path', '')
@@ -301,12 +329,13 @@ async def build():
             config={}
         )
         
-        # Armazena o resultado do build
-        last_build_result = result
+        # Usa o StateManager para atualizar o estado
+        build_result = state_manager.set_build_result(result)
         
-        # Analisa os erros do build e atualiza last_build_analysis
+        # Analisa os erros do build e atualiza o estado
         if result['output']:
-            last_build_analysis = analyze_build_errors_and_suggest(result['output'])
+            analysis = analyze_build_errors_and_suggest(result['output'])
+            state_manager.set_build_analysis(analysis, build_result.session_id)
         
         return jsonify(result)
         
@@ -315,15 +344,16 @@ async def build():
 
 @app.route('/api/analyze-build', methods=['POST'])
 async def analyze_build():
-    global last_build_result
+    build_result = state_manager.get_build_result()
     
-    if not last_build_result:
+    if not build_result:
         return jsonify({
             "error": "Nenhum resultado de build disponível. Execute o build primeiro."
         })
     
     try:
-        analysis = analyze_build_errors_and_suggest(last_build_result.get('output', ''))
+        analysis = analyze_build_errors_and_suggest(build_result.output)
+        state_manager.set_build_analysis(analysis, build_result.session_id)
         return jsonify(analysis)
         
     except Exception as e:

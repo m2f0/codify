@@ -1,38 +1,89 @@
-"""Build-related tools."""
+"""
+Módulo de ferramentas para build de projetos C#.
+
+Este módulo fornece funcionalidades para compilação e análise
+de projetos C#, incluindo gerenciamento de erros e logs.
+
+Typical usage example:
+
+    result = await build_csharp_project("/path/project", "MyApp", config)
+    if result["success"]:
+        print(f"Build successful: {result['output']}")
+"""
+
 import asyncio
 import os
 import logging
 import traceback
 from typing import Dict, Any
+from pathlib import Path
+from ..utils.validators import InputValidator, ValidationError
 
 logger = logging.getLogger(__name__)
 
 async def build_csharp_project(
     project_path: str,
     app_name: str,
-    config: Dict[str, Any],
+    config: Dict[str, Any] = None,
     session_id: str = None
 ) -> Dict[str, Any]:
     """
-    Executa o build de um projeto C#.
+    Executa o build de um arquivo C# (.cs) ou projeto (.csproj)
+    
+    Args:
+        project_path: Caminho para o diretório do projeto
+        app_name: Nome do arquivo (.cs ou .csproj)
+        config: Configurações adicionais (opcional)
+        session_id: ID da sessão de build (opcional)
     """
     try:
-        full_path = os.path.join(project_path, app_name)
-        if not os.path.exists(full_path):
+        if config is None:
+            config = {}
+            
+        base_dir = os.getenv("CSHARP_PROJECT_DIR", "./csharp_project")
+        
+        # Lista de possíveis caminhos onde o arquivo pode estar
+        possible_paths = [app_name]  # caminho direto
+        
+        # Busca recursiva em todas as subpastas do diretório base
+        for root, _, files in os.walk(base_dir):
+            if app_name in files:
+                possible_paths.append(os.path.join(root, app_name))
+                
+        file_path = None
+        tried_paths = []
+        
+        # Tenta encontrar o arquivo em cada possível localização
+        for path in possible_paths:
+            tried_paths.append(path)
+            if os.path.exists(path):
+                file_path = path
+                break
+                
+        if not file_path:
             return {
                 "success": False,
-                "output": f"Arquivo de projeto não encontrado: {full_path}",
+                "output": f"Arquivo {app_name} não encontrado. Caminhos tentados: {', '.join(tried_paths)}",
                 "session_id": session_id
             }
-        
+
+        logger.info(f"Arquivo encontrado: {file_path}")
+
+        # Configura o ambiente para usar UTF-8
         env = os.environ.copy()
         env["PYTHONIOENCODING"] = "utf-8"
         env["DOTNET_CLI_UI_LANGUAGE"] = "en"
         
+        # Se for arquivo .cs, usa dotnet build diretamente no arquivo
+        # Se for .csproj, usa o arquivo de projeto
+        cmd = ["dotnet", "build"]
+        if file_path.endswith('.cs'):
+            cmd.extend([file_path, "-v", "detailed"])
+        else:
+            cmd.extend([file_path, "-v", "detailed", "/p:WarningLevel=0"])
+        
         process = await asyncio.create_subprocess_exec(
-            "dotnet", "build", full_path,
-            "-v", "detailed",
-            "/p:WarningLevel=0",
+            *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
             env=env
@@ -42,9 +93,6 @@ async def build_csharp_project(
         
         output = stdout.decode('utf-8', errors='replace')
         error_output = stderr.decode('utf-8', errors='replace')
-        
-        output = output.replace('\r\n', '\n').replace('\r', '\n')
-        error_output = error_output.replace('\r\n', '\n').replace('\r', '\n')
         
         combined_output = output + "\n" + error_output if error_output else output
         

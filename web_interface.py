@@ -75,7 +75,7 @@ tools = [
     Tool(
         name="analyze_build",
         description="Analisa os erros do último build e sugere correções",
-        func=lambda: analyze_build_errors_and_suggest(
+        func=lambda *args: analyze_build_errors_and_suggest(
             state_manager.get_build_result().output if state_manager.get_build_result() else 'No build output available'
         ),
     ),

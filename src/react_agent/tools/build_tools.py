@@ -18,9 +18,14 @@ import traceback
 from typing import Dict, Any
 from pathlib import Path
 from ..utils.validators import InputValidator, ValidationError
-
+from langchain_core.messages import AIMessage
+from langchain_core.runnables import RunnableConfig
+from langgraph.graph import StateGraph
+from langgraph.prebuilt import ToolNode
+from langsmith.run_helpers import traceable
 logger = logging.getLogger(__name__)
 
+@traceable(name="build_csharp_project")
 async def build_csharp_project(
     project_path: str,
     app_name: str,
